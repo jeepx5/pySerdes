@@ -1,0 +1,46 @@
+
+grid_size = 128
+grid = np.zeros((grid_size, grid_size), dtype=np.int32)
+
+tmin = -32.0
+tmax = 31.0
+n = osr
+
+dt = (tmax - tmin) / (n - 1)
+
+ymin = -0.1
+ymax = 1.0
+
+num_traces = osr*127
+
+for k in range(num_traces):
+    steps = 1/64*np.ones(len(tt))
+    steps[0] = 0
+    #steps_sum = steps.cumsum()
+    steps_sum=tt
+    t2 = tmin + (tmax - tmin) * steps_sum / steps_sum[-1]
+
+    td = (((t2 - tmin) / (tmax - tmin)) * grid_size).astype(np.int32)
+
+    yd = (((y - ymin) / (ymax - ymin)) * grid_size).astype(np.int32)
+
+    bres_curve_count_slow(td, yd, grid)
+
+plt.figure()
+# Convert to float32 so we can use nan instead of 0.
+grid = grid.astype(np.float32)
+grid[grid == 0] = np.nan
+plt.grid(color='w')
+plt.imshow(grid.T[::-1, :], extent=[0, 1, 0, 1], cmap=plt.cm.coolwarm,
+           interpolation='gaussian')
+ax = plt.gca()
+ax.set_axis_bgcolor('k')
+ax.set_xticks(np.linspace(0, 1, 11))
+ax.set_yticks(np.linspace(0, 1, 11))
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+plt.colorbar()
+fig = plt.gcf()
+
+# plt.savefig("eye-diagram.png", bbox_inches='tight')
+plt.show()
