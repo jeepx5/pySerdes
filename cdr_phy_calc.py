@@ -20,7 +20,7 @@ def bertCal(fin):
 
 
 cdrph = linModel()
-lst=[1,2,3,5,6,7]
+lst=[1,2,3,5,6,7,9,10,11]
 exlst=['A','B','C','D','E','F']
 
 pltn=1
@@ -42,8 +42,8 @@ for cdrset in lst:
     #fname = "_ber-10_500M_5mUIRJ5mUIBUJ.csv"
     #pth='D:\\proj\\CPHY_12FF\\LVDS_TEST\\lvds\\CDR_'
     #fname='704.csv'
-    pth='D:\\proj\\CPHY_12FF\\LVDS_TEST\\lvds1229\\CDR_'
-    fname='704_cp10_new.csv'
+    pth='D:\\proj\\CPHY_12FF\\LVDS_TEST\\1231\\lvds'
+    fname='704_2nd10M.csv'
 
 
     pth4M='D:\\proj\\CPHY_12FF\\LVDS_TEST\\LVDS_5P2G\\VGAEQ00_CDR'
@@ -58,9 +58,7 @@ for cdrset in lst:
     m={}
     m4m={}
     m=csv2msk(cfile)
-    m4m=csv2msk(cf4M)
     lst=[]
-    lst4M=[]
     #m=filABpoint(m, [10414058,22588636])
 
     mcal=np.array(m['amp'])+np.array(callist['amp'])
@@ -70,7 +68,7 @@ for cdrset in lst:
     jtol4M=[m['freq'],m['amp']]
     #cdrph.jtol(jtolmask, jtol, jtolreal, freq)
     fig1 = mplt.figure(1)
-    mplt.subplot(2,3,pltn)
+    mplt.subplot(3,3,pltn)
     lms, = mplt.loglog(jtolreal[0], jtolreal[1], 'g^--', lw=2, label='after_cal')
     lmd, =mplt.loglog(freq, jtol, color='blue', lw=2, label='model')
     lmk, = mplt.loglog(jtol4M[0], jtol4M[1], 'r+--', lw=2, label='before_cal')
