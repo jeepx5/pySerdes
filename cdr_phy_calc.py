@@ -5,26 +5,46 @@ from linModel import linModel
 from JTOL_EXT import csv2msk, filABpoint
 import numpy as np
 
+def bertCal(fin):
+    mbert = csv2msk(fin)
+    calbert = mbert['amp']
+    deo=1-calbert[-1]
+    #print(mbert['amp'])
+    mbert['amp']=[deo for i in calbert if (i+deo) >1.1]
+    mbert['amp']=mbert['amp']+[1-i for i in calbert if (i+deo) <=1.1]
+    #print(mbert['amp'])
+    return mbert
+
+
+
 
 
 cdrph = linModel()
-lst=[2,3,5,6, 7,11]
+lst=[1,2,3,5,6,7]
 exlst=['A','B','C','D','E','F']
 
 pltn=1
+#===calibration============
+fin="D:\\proj\\CPHY_12FF\\LVDS_TEST\\1231\\bert2nd10M.csv"
+callist=bertCal(fin)
+#====cal list gen==========
+
 for cdrset in lst:
     pgain=np.mod(cdrset, 4)
 
     fgain=np.floor((cdrset-pgain)/4)
     print(pgain, fgain)
-    hodb, hoph, freq, jtol = cdrph.cdrStb(0.5, 5.2e9, 36, 2**(pgain+2), 2**(fgain), 2 ** 6, 2 ** 6, 32, 4, 0.75)#20/1000*5.2)
+    hodb, hoph, freq, jtol = cdrph.cdrStb(0.77, 5.2e9, 36, 2**(pgain+2), 2**(fgain), 2 ** 6, 2 ** 6, 32, 4, 0.183)#20/1000*5.2)
 
     #jtolmask = [[500e3, 1e6, 2e6, 4.9e6, 50e6], [0, 0, 0, 0, 0]]
     #jtolmask = [[500e3, 1e6, 2e6, 4.9e6, 50e6], [2, 1, 0.5, 0.2, 0.2]]
     #pth="D:\proj\CPHY_12FF\LVDS_TEST\LVDS_BERT\LVDS_5P2G\VGAEQ00_CDR"
     #fname = "_ber-10_500M_5mUIRJ5mUIBUJ.csv"
-    pth='D:\\proj\\CPHY_12FF\\LVDS_TEST\\lvds\\CDR_'
-    fname='704.csv'
+    #pth='D:\\proj\\CPHY_12FF\\LVDS_TEST\\lvds\\CDR_'
+    #fname='704.csv'
+    pth='D:\\proj\\CPHY_12FF\\LVDS_TEST\\lvds1229\\CDR_'
+    fname='704_cp10_new.csv'
+
 
     pth4M='D:\\proj\\CPHY_12FF\\LVDS_TEST\\LVDS_5P2G\\VGAEQ00_CDR'
     fname4M="_ber-10_500M_5mUIRJ5mUIBUJ.csv"
@@ -42,14 +62,18 @@ for cdrset in lst:
     lst=[]
     lst4M=[]
     #m=filABpoint(m, [10414058,22588636])
-    jtolreal=[m['freq'], m['amp']]
-    jtol4M=[m4m['freq'],m4m['amp']]
+
+    mcal=np.array(m['amp'])+np.array(callist['amp'])
+
+    jtolreal=[m['freq'], mcal]
+
+    jtol4M=[m['freq'],m['amp']]
     #cdrph.jtol(jtolmask, jtol, jtolreal, freq)
     fig1 = mplt.figure(1)
-    mplt.subplot(3,2,pltn)
-    lms, = mplt.loglog(jtolreal[0], jtolreal[1], 'g^--', lw=2, label='2Mcdr')
+    mplt.subplot(2,3,pltn)
+    lms, = mplt.loglog(jtolreal[0], jtolreal[1], 'g^--', lw=2, label='after_cal')
     lmd, =mplt.loglog(freq, jtol, color='blue', lw=2, label='model')
-    lmk, = mplt.loglog(jtol4M[0], jtol4M[1], 'r+--', lw=2, label='4Mcdr')
+    lmk, = mplt.loglog(jtol4M[0], jtol4M[1], 'r+--', lw=2, label='before_cal')
     #lmk,=mplt.loglog(jtolmask[0], jtolmask[1], color='red', lw=4, label='mask')
     mplt.legend(handles=[lmd,lmk,lms])
     #mplt.legend(handles=[lmd, lms])
@@ -59,6 +83,8 @@ for cdrset in lst:
     pltn+=1
 
 mplt.show()
+
+
 
 
 
