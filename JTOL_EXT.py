@@ -22,7 +22,7 @@ def extData(line):
                 amp = amp+din
             #rst.append(din)
         rst=[int(freq), float(amp)]
-        print(rst)
+        #print(rst)
         return rst
 
 
@@ -51,6 +51,47 @@ def filABpoint(din, lst):
         din['amp'].remove(din['amp'][pos])
     return din
 
+
+def csv2mskUP(cfile):
+    ftmp=5e8
+    amptmp=0.0
+    msk = {
+        'freq': [],
+        'amp': []
+    }
+
+    mskFinal = {
+        'freq': [],
+        'amp': []
+    }
+    with open(cfile) as fin:
+        for line in fin:
+            if line == None or line.find('\x00'):
+                continue
+            else:
+                rst = extData(line.encode('utf-8'))
+                if rst == None:
+                    continue
+
+
+                msk['freq'].append(rst[0])
+                msk['amp'].append(rst[1])
+
+        #print(msk)
+        ftmp=5e8
+
+        for i in range(len(msk['freq'])):
+            if msk['freq'][i] !=ftmp:
+                ftmp=msk['freq'][i]
+                mskFinal['freq'].append(msk['freq'][i-1])
+                mskFinal['amp'].append(msk['amp'][i-1])
+            else:
+                pass
+
+        #print(mskFinal)
+
+
+        return mskFinal
 
 
 if __name__ == '__main__':
