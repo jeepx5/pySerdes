@@ -8,13 +8,13 @@ class linModel():
         print('initializing Linear Model')
 
     def cdrStb(self, EO, DR, Tdelay, Kp, Kf, Divp, Divf, Npi, CDRint, dj):
-        #Kpd=1/(dj*np.sqrt(2*np.pi))
-        Kpd = 1/dj
+        Kpd=1/(dj*np.sqrt(2*np.pi))
+        #Kpd = 1/dj
         A = Kpd * Kp / Divp / Npi
         B = DR / CDRint
         C = Kf / Divf / Kp
         x = np.logspace(5, 8, num=1000, endpoint=True, base=10., dtype=None)
-        x=x*3
+        x=x*5
         # convert f to w
         f2w = np.vectorize(lambda f: 2 * np.pi * f * complex(0, 1))
         s = f2w(x)
@@ -28,8 +28,8 @@ class linModel():
             ((A * B / si + A * B * B * C / si / si) * np.e ** (Tdelay / DR * -1 * si))) / np.pi * 180
         hoph_func = np.vectorize(hsph)
         hoph = hoph_func(s)
-        jtol_tf = lambda si: -0.02+EO / (
-        abs(1 / (1 + ((A * B / si + A * B * B * C / si / si) * np.e ** (Tdelay / DR * -1 * si)))))
+        jtol_tf = lambda si: +EO / (abs(1 / (1 + ((A * B / si + A * B * B * C / si / si) * np.e ** (Tdelay / DR * -1 * si)))))
+
         jtol_func = np.vectorize(jtol_tf)
         jtol = jtol_func(s)
         # mag & ph done
