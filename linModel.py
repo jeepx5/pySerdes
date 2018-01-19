@@ -28,7 +28,7 @@ class linModel():
             ((A * B / si + A * B * B * C / si / si) * np.e ** (Tdelay / DR * -1 * si))) / np.pi * 180
         hoph_func = np.vectorize(hsph)
         hoph = hoph_func(s)
-        jtol_tf = lambda si: +EO / (abs(1 / (1 + ((A * B / si + A * B * B * C / si / si) * np.e ** (Tdelay / DR * -1 * si)))))
+        jtol_tf = lambda si: +EO / (abs(1 / (1 + ((A * B / si + A * B * B * C / si / si) * np.e ** (Tdelay / DR * -1 * si)))))-(EO-0.75)/12
 
         jtol_func = np.vectorize(jtol_tf)
         jtol = jtol_func(s)
