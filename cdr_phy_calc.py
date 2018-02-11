@@ -16,11 +16,16 @@ def bertCal(fin):
     return mbert
 
 
-
+def csv2lst(cfile):
+    m = {}
+    m = csv2mskUP(cfile)
+    lst = []
+    jtolreal = [m['freq'], m['amp']]
+    return jtolreal
 
 
 cdrph = linModel()
-lst=[3,5,6,7]
+lst=[3,5,6,7, 10]
 exlst=['A','B','C','D','E','F']
 
 rjlst=[1,2,3]
@@ -38,51 +43,63 @@ for cdrset in lst:
         #pgain=3
         #fgain=1
         print(pgain, fgain)
-        rjtt=np.sqrt(0.083*0.083+rjsrc*rjsrc/100/100)
+        #rjtt=np.sqrt(0.083*0.083+rjsrc*rjsrc/100/100)
+        rjtt = np.sqrt(19.8*19.8*5.2*5.2*1e-6 + rjsrc * rjsrc / 100 / 100+4.6*4.6*5.2*5.2*1e-6)
+        #19.8ps DJ std, 4.6ps RJ std
         print(rjtt)
         eo=0.75-12*(rjsrc/100)
         print(eo)
         hodb, hoph, freq, jtol = cdrph.cdrStb(eo, 5.2e9, 26, 2**(pgain+2), 2**(fgain), 2 ** 6, 2 ** 6, 32, 4,
                                               rjtt)#20/1000*5.2)
 
-        #jtolmask = [[500e3, 1e6, 2e6, 4.9e6, 50e6], [0, 0, 0, 0, 0]]
-        #jtolmask = [[500e3, 1e6, 2e6, 4.9e6, 50e6], [2, 1, 0.5, 0.2, 0.2]]
-        #pth="D:\proj\CPHY_12FF\LVDS_TEST\LVDS_BERT\LVDS_5P2G\VGAEQ00_CDR"
-        #fname = "_ber-10_500M_5mUIRJ5mUIBUJ.csv"
-        #pth='D:\\proj\\CPHY_12FF\\LVDS_TEST\\lvds\\CDR_'
-        #fname='704.csv'
         pth='D:\\proj\\CPHY_12FF\\LVDS_TEST\\20180112_phyd+phya\\20180112_phyd+phya\\cdr'
         cdr_reg='704_RJ'
         fname='0mUI.csv'
+
+        pthrnd='D:\\proj\\CPHY_12FF\\LVDS_TEST\\20180127_phyd+phya_random_data\\cdr'
+        cdrrnd_reg = '704_'
+        fnamernd = '0mUI_RJ.csv'
 
 
 
         if cdrset < 10:
             cfile = pth+str(cdrset)+cdr_reg+str(rjsrc)+fname
-
+            cfilernd = pthrnd + str(cdrset) + cdrrnd_reg + str(rjsrc) + fnamernd
         else:
             cdrpos=cdrset - 10
             cfile=pth+str(exlst[cdrpos])+cdr_reg+str(rjsrc)+fname
+            cfilernd = pthrnd + str(exlst[cdrpos]) + cdrrnd_reg + str(rjsrc) + fnamernd
 
-        m={}
-        m=csv2mskUP(cfile)
-        lst=[]
-        #m=filABpoint(m, [10414058,22588636])
+        jtolreal=csv2lst(cfile)
 
-        jtolreal=[m['freq'], m['amp']]
+        jtolrnd=csv2lst(cfilernd)
+
+        try:
+            ind = np.ndarray.tolist(hodb).index(-1 * min(np.ndarray.tolist(np.absolute(hodb))))
+        except:
+            ind = np.ndarray.tolist(hodb).index(1 * min(np.ndarray.tolist(np.absolute(hodb))))
+
+
 
         #cdrph.jtol(jtolmask, jtol, jtolreal, freq)
         fig1 = mplt.figure(1)
-        mplt.subplot(4,3,pltn)
-        lms, = mplt.loglog(jtolreal[0], jtolreal[1], 'g^--', lw=2, label='after_cal')
+        mplt.subplot(5,3,pltn)
+        mplt.annotate('PM:'+format(180 + np.ndarray.tolist(hoph)[ind], '.2f'), xy=(freq[ind], 1),
+                      xytext=(freq[ind], 1), arrowprops=dict(facecolor='black', shrink=1e-6),)
+        mplt.annotate('UGB:'+format(freq[ind], '.2e'), xy=(freq[ind], 1.5), xytext=(freq[ind], 1.5),
+                      )
+        lms, = mplt.loglog(jtolreal[0], jtolreal[1], 'g^--', lw=2, label='CJT')
         lmd, =mplt.loglog(freq, jtol, color='blue', lw=2, label='model')
-        #lmk,=mplt.loglog(jtolmask[0], jtolmask[1], color='red', lw=4, label='mask')
-        mplt.legend(handles=[lmd,lms])
+        lmk,=mplt.loglog(jtolrnd[0], jtolrnd[1], 'ro--', lw=3, label='RND')
+        mplt.legend(handles=[lmd,lms,lmk])
         #mplt.legend(handles=[lmd, lms])
 
         mplt.title('reg: '+str(cdrset)+'  RJ='+str(rjsrc)+'0mUI', fontsize=10)
         mplt.grid(True)
+
         pltn+=1
+
+
 
 mplt.show()
 
