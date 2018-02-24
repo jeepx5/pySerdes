@@ -31,8 +31,8 @@ class dfe:
         self.ekin = ekin
         delta = 16.
         dfe_tap = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        dfe_tap[0] = self.htaps[0][-1] + 1. / 8 * delta * self.ekin / 128. * 0.48 * (
-        -1 * np.sign(self.ekin) * np.sign(self.din[-2]) + 2) / 8
+        dfe_tap[0] = 1. / 128. * 0.48*(self.htaps[0][-1]*128/0.48 + 1. / 8 * delta * self.ekin * (
+        np.sign(self.din[-2]) + 2) / 8)#-1 * np.sign(self.ekin) * np.sign(self.din[-2]) + 2) / 8
 
         dfe_tap[1] = self.htaps[1][-1] + 1. / 16 * delta * np.sign(self.ekin) * np.sign(self.din[-2]) / 128. * 0.48
         dfe_tap[2] = self.htaps[2][-1] + 1. / 32 * delta * np.sign(self.ekin) * np.sign(self.din[-3]) / 128. * 0.48
@@ -52,8 +52,11 @@ class dfe:
         delta = 16.
         v_tap = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         #vntap = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        v_tap[0] = self.vtaps[0][-1] + 1. / 8 * delta * self.ekin / 128. * 0.48 * (
-            -1 * np.sign(self.ekin) * np.sign(self.din[-2]) + 2) / 8
+        # v_tap[0] = self.vtaps[0][-1] + 1. / 8 * delta * self.ekin / 128. * 0.48 * (
+        #     -1 * np.sign(self.ekin) * np.sign(self.din[-2]) + 2) / 8
+        v_tap[0] = 1./ 128. * 0.48*(self.vtaps[0][-1]*128/0.48 + 1. / 8 * delta * self.ekin  * (
+            np.sign(self.din[-2]) + 1) / 8)
+        print(str(self.din[-2] + 1))
         #print(self.vtaps[0][-1],v_tap[0])
 
 
