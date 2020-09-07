@@ -21,7 +21,7 @@ from eyediagram import bres_segment_count_slow, bres_curve_count_slow,random_tra
 
 
 
-osr=64
+osr=32 #when osr is 64, the cdr final lock point depends on initial point
 
 
 
@@ -49,17 +49,17 @@ print(len(prbs_os))
 
 tt = np.linspace(0, len(prbs_os), len(prbs_os))
 
-dr=5e9
+dr=10e9
 
 dt=1/osr
 
-normpole=2*np.pi*4600e6/dr
+normpole=2*np.pi*8600e6/dr
 
-normtxpole2=2*np.pi*8000e6/dr
+normtxpole2=2*np.pi*16000e6/dr
 
-normtxpole1=2*np.pi*2000e6/dr
+normtxpole1=2*np.pi*4000e6/dr
 
-normtxzero=2*np.pi*2600e6/dr
+normtxzero=2*np.pi*5200e6/dr
 
 
 
@@ -96,13 +96,10 @@ tt=tt*dt
 #y, t, x =lsim(syst, prbs_os, tt, interp=1)
 y, t, x =lsim(syst, prbs_os, tt)
 #y=y*0.4
-
-print(y)
-
+#print(y)
 #y=np.delete(y[0], -1, axis=0)
 
 print(y)
-
 print(len(y))
 
 y4i=np.reshape(y, [int(len(y)/osr/2), osr*2])
@@ -154,8 +151,8 @@ dm2 = 0
 errm2 = 0
 dm1 = 0
 errm1 =0
-rxtd = 53
-rxtdreal = 53.0
+rxtd = 13
+rxtdreal = 13.0
 tdval = []
 ysample0=[]
 ysample1=[]
@@ -164,7 +161,7 @@ ysample3=[]
 errval = []
 dataval = []
 vpval1 =[]
-vpscale = 0.8
+vpscale = 0.6
 vp1 = 1*vpscale
 vpval2 =[]
 vp2 = 2*vpscale
@@ -173,7 +170,7 @@ vp3 = 3*vpscale
 vpval0 =[]
 vp0 = 0*vpscale
 
-y4i=np.reshape(y, [int(len(y)/osr), osr])
+y4i=np.reshape(y4i, [int(len(y)/osr), osr])
 
 for k in range(len(y4i)-1):
     tnow = rxtd
@@ -201,29 +198,37 @@ for k in range(len(y4i)-1):
     #else: 
     #    d0 = 0
     #    err = 0    
-    
+    '''
     if(d0 ==1 or d0 ==-1 and d0 != dm1):
         slope = np.sign(d0-dm1)         
     else:
         slope =0
         err =0
-        
+   '''     
     
     
     
     #err = (y4i[k][tnow]-d0)
     #Pattern Filter
     '''
-    if ((dm2<dm1 and dm1>d0 and dm2!=d0 ) or (dm2>dm1 and dm1<d0 and dm2!=d0 )):
+    if ((dm2<dm1 and dm1>d0 and dm2==d0 ) or (dm2>dm1 and dm1<d0 and dm2==d0 )):
         #MMPD
-        dstep = np.sign(errm1)*np.sign(dm2-1.5)-np.sign(errm2)*np.sign(dm1-1.5)
+        #dstep = np.sign(errm1)*np.sign(dm2-1.5)-np.sign(errm2)*np.sign(dm1-1.5)
+        dstep = dm1*err-d0*errm1
     else: dstep = 0
     '''
     dstep = (dm1*err-d0*errm1)
+    #print('d0: ',d0)
+    #print('dm1: ',dm1)
+    #print('err: ',err)
+    #print('errm1: ',errm1)
+    #print('step： ', dstep)
     #MMSE PD
     #dstep = (slope*err)
     
-    rxtdreal =((rxtdreal+0.25*dstep)%len(y4i[1]))
+    #rxtdreal =((rxtdreal+0.25*dstep+np.random.rand()*0.0125)%len(y4i[1]))
+    rxtdreal =((rxtdreal+0.25*dstep+np.random.rand()*0.0)%len(y4i[1]))
+    #added jitter, without jitter the pd will lock to wrong phases
     rxtd =int(rxtdreal)
     tdval.append(tnow)
  
@@ -261,13 +266,14 @@ plt.plot(ysample3, label='ys_3', color='k', alpha=.5)
 plt.title('Ysample0to3')
 plt.grid()
 plt.show()
-'''
+
 ########################
 ##### eye position #####
 ########################    
 print('err_mean: ',np.mean(errval))
 print('data_mean: ',np.mean(dataval))
-
+print('cdr_out: ', np.mean(tdval))
+'''
 ti = range(osr)
 for k in range(len(y4i)-1):
 
