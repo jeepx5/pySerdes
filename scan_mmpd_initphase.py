@@ -26,10 +26,10 @@ from copy import *
 
 if __name__ == "__main__":
     osr=32 #when osr is 64, the cdr final lock point depends on initial point
-    #seed_lsb=[1,0,1,1,0,1,0]
-    #seed_msb=[1,1,0,1,0,0,1]
-    seed_lsb=[1,0,1,1,0,1,0,1,0,1,1,0,1,0,1]
-    seed_msb=[1,1,0,1,0,0,1,1,0,1,1,0,1,0,1]
+    seed_lsb=[1,0,1,1,0,1,0]
+    seed_msb=[1,1,0,1,0,0,1]
+    #seed_lsb=[1,0,1,1,0,1,0,1,0,1,1,0,1,0,1]
+    #seed_msb=[1,1,0,1,0,0,1,1,0,1,1,0,1,0,1]
     dr = 10e9
     
     normpole=2*np.pi*6.6e9/dr
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     txtf = tf(numtx, dentx)
     chtf = tf(num, den)
     
-    listlength = 2#prbs7 =320, prbs15 =1
+    listlength = 512#prbs7 =320, prbs15 =1
     #syst=series(sys, sys2)
 
     pam4sys = pam4cdr(osr, seed_lsb, seed_msb, dr)
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     ################
     # add noise 
     shp=rxin.shape
-    vrnd=np.random.rand(len(rxin))*0.25
+    vrnd=np.random.rand(len(rxin))*0.125
     rxin=rxin+vrnd
     ################
     
