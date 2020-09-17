@@ -439,7 +439,7 @@ if __name__ == "__main__":
     #seed_lsb=[1,0,1,1,0,1,0,1,0,1,0,1,1,0,1]
     #seed_msb=[1,1,0,1,0,0,1,1,0,1,1,0,1,1,1]
     dr = 10e9
-    normpole=2*np.pi*6.6e9/dr
+    normpole=2*np.pi*5.6e9/dr
     normtxpole2=2*np.pi*10e9/dr
     
     normtxpole1=2*np.pi*4e9/dr
@@ -471,7 +471,7 @@ if __name__ == "__main__":
     for k in range(int(len(y4i)/listlength)-1):    
         plt.plot(ti, y4i[k], label='y_0', color='g', alpha=.15)    
         plt.grid()    
-        plt.title('Eye Diagram of Channel Out 2UI')    
+        plt.title('Eye Diagram of DFE Out 2UI')    
     plt.show()
     
     #MMSEPD CDR #############################
@@ -492,14 +492,14 @@ if __name__ == "__main__":
     plt.plot(vpval[2], label='y_0', color='r', alpha=.15)   
     plt.plot(vpval[3], label='y_0', color='k', alpha=.15)   
     plt.grid()    
-    plt.title('Eye Diagram of Channel Out 2UI')    
+    plt.title('Adaptive Threshold Voltage Value')    
     plt.show()
     plt.plot(ysample[0], label='y_0', color='g', alpha=.15)    
     plt.plot(ysample[1], label='y_0', color='b', alpha=.15)   
     plt.plot(ysample[2], label='y_0', color='r', alpha=.15)   
     plt.plot(ysample[3], label='y_0', color='k', alpha=.15)   
     plt.grid()    
-    plt.title('Eye Diagram of Channel Out 2UI')    
+    plt.title('Serdes Digital Out')    
     plt.show()
     plt.plot(h1, label='y_0', color='k', alpha=.15)   
     plt.grid()    
